@@ -2,6 +2,9 @@ import org.apache.commons.validator.routines.UrlValidator
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
+import org.springframework.util.StringUtils
+import java.io.File
+import java.nio.file.Files
 
 /* @author  OLSON.LIU
  * @since   2018/9/17
@@ -9,9 +12,16 @@ import org.jsoup.select.Elements
  */
 class WebSite {
   companion object {
-    const val storeImagePath = "D:\\pic";
+    var storeImagePath = "C:\\"
     val urlScheme = arrayOf("https", "http")
   }
+
+  constructor()
+  constructor(localPath:String){
+    storeImagePath = if (!existDirectory(localPath)) localPath else storeImagePath
+  }
+
+
 
   fun grabWholeHtml(url: String) {
     if (valiadteUrl(url)) {
@@ -27,5 +37,9 @@ class WebSite {
   private fun valiadteUrl(url: String): Boolean {
     val validator = UrlValidator(urlScheme)
     return validator.isValid(url)
+  }
+
+  private fun existDirectory(localPath:String):Boolean{
+    return !StringUtils.isEmpty(localPath) && File(localPath).isDirectory
   }
 }
