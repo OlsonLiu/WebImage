@@ -1,3 +1,4 @@
+
 import org.apache.commons.validator.routines.UrlValidator
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -26,7 +27,11 @@ class WebSite {
 
     fun grabWholeHtml(url: String) {
         if (validateUrl(url)) {
-            val html: Document = Jsoup.connect(url).get()
+            var html: Document = Jsoup.connect(url)
+                    .userAgent("Chrome")
+                    .cookie("auth", "token")
+                    .timeout(3000)
+                    .get()
             val imgElements: Elements = html.getElementsByTag("img")
             for ((index, eachEle) in imgElements.withIndex()) {
 
@@ -39,7 +44,9 @@ class WebSite {
     private fun download(imgUrl: String, fileName: String) {
         var imgBytes: ByteArray? = ByteArray(0)
         try {
-            imgBytes = Jsoup.connect(imgUrl)?.ignoreContentType(true)?.execute()?.bodyAsBytes()
+            imgBytes = Jsoup.connect(imgUrl)?.userAgent("Chrome")
+                    ?.cookie("auth", "token")
+                    ?.timeout(3000)?.ignoreContentType(true)?.execute()?.bodyAsBytes()
         } catch (e: Exception) {
             e.printStackTrace()
             //TODO why this always process empty string
