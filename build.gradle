@@ -14,7 +14,7 @@ dependencies {
     implementation "org.jsoup:jsoup:1.8.3"
     implementation "commons-validator:commons-validator:1.6"
     implementation "org.springframework:spring-core:5.0.4.RELEASE"
-
+    implementation "org.seleniumhq.selenium:selenium-java:3.13.0"
 }
 
 compileKotlin {

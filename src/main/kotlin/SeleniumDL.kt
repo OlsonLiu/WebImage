@@ -8,26 +8,33 @@ import java.net.URL
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
-public class SelenuimDL {
+class SeleniumDL {
     companion object {
         val selenuimHome = ""
     }
 
     fun download() {
         // your chromedriver.exe location
-        System.setProperty("webdriver.chrome.driver", "C:\\somepath\\chromedriver.exe")
+      System.setProperty("webdriver.chrome.driver", "E:\\working\\kotlin\\chromedriver.exe")
         val driver = ChromeDriver()
+      val src = "D:\\"
         try {
-            driver.get("https://www.aisinei.org/thread-17561-1-1.html")
-/*
-            val element:WebElement = chromeDriver.findElement(By.cssSelector(".pattimg img"))
-            */
+          driver.get("https://www.aisinei.net/thread-18885-1-4.html")
+
+          //set image directory
+          var directory = driver.title
+          directory = directory.substring(0, directory.lastIndexOf("[") - 1)
+          val file = File("$src$directory\\")
+          file.mkdir()
+
+          //click and wait
             driver.findElement(By.cssSelector("a.xi2.attl_m")).click()
             driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS)
 
             val listResult: List<WebElement> = driver.findElements(By.cssSelector("div.mbn.savephotop > img"))
             for ((index, webElement) in listResult.withIndex()) {
                 val url = URL(webElement.getAttribute("src"))
+
                 // prepare connection
                 var connection: HttpURLConnection = url.openConnection() as HttpURLConnection  // kotlin cast
                 connection.setRequestProperty(
@@ -35,7 +42,7 @@ public class SelenuimDL {
                 val savedImg: BufferedImage = ImageIO.read(connection.inputStream)
 
                 // you must have D:\\temp  path
-                ImageIO.write(savedImg, "jpg", File("D:\\temp\\$index.jpg"))
+              ImageIO.write(savedImg, "jpg", File(file, "$index.jpg"))
             }
         } catch (e: Exception) {
             e.printStackTrace()
