@@ -1,13 +1,12 @@
 import org.openqa.selenium.By
-import org.openqa.selenium.WebElement
 import org.openqa.selenium.chrome.ChromeDriver
 import java.awt.image.BufferedImage
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.stream.Collectors
 import java.util.stream.StreamSupport
 import javax.imageio.ImageIO
+import kotlin.streams.toList
 
 class NlegsDL {
   companion object {
@@ -16,16 +15,17 @@ class NlegsDL {
   }
 
   fun downloadAll(siteUrl: String) {
-//    System.setProperty("webdriver.chrome.driver", "E:\\working\\kotlin\\chromedriver.exe")
     try {
       driver.get(siteUrl)
       var urls = driver.findElements(By.cssSelector("table.table.table-hover > tbody > tr > td > a"))
-      val urlList: List<String> = StreamSupport.stream(urls.spliterator(), true)
-          .map { t: WebElement? -> t?.getAttribute("href").toString().trim() }.collect(Collectors.toList())
+      val dlObjs: List<UrlWithTitle> = StreamSupport.stream(urls.spliterator(), false).map {
+        UrlWithTitle(it?.getAttribute("href").toString().trim(), it?.getAttribute("innerText").toString())
+      }.toList()
 
-      for ((index, url) in urlList.withIndex()) {
-        downloadWholePage(url)
-        println("${index}th download complete")
+      for (data in dlObjs) {
+        if (filterGoodPart(data.title)) {
+          downloadWholePage(data.url)
+        }
       }
     } catch (e: Exception) {
       e.printStackTrace()
@@ -42,22 +42,23 @@ class NlegsDL {
     val file = File("$src$directory\\")
     file.mkdir()
 
-    //click and wait
     var elements = driver.findElements(By.cssSelector(".col-md-12.col-lg-12.panel.panel-default .panel-body a"))
     for ((index, webElement) in elements.withIndex()) {
       val urlStr = webElement.getAttribute("href").toString().trim()
       var url = URL(urlStr)
 
       var connection: HttpURLConnection = url.openConnection() as HttpURLConnection  // kotlin cast
-//      connection.addRequestProperty(
-//          "User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)")
       connection.addRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)")
       connection.addRequestProperty("Referer", urlStr)
       val savedImg: BufferedImage = ImageIO.read(connection.inputStream)
 
-      // you must have D:\\temp  path
       ImageIO.write(savedImg, "jpg", File(file, "$index.jpg"))
     }
-    driver.navigate().back()
+  }
+
+  fun filterGoodPart(siteName: String): Boolean {
+    val stars = listOf<String>("IMiss")
+    val temp = stars.stream().filter { siteName.contains(it) }.toList()
+    return temp.isNotEmpty()
   }
 }
