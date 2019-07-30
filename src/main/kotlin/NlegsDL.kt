@@ -56,9 +56,8 @@ class NlegsDL {
     }
   }
 
-  fun filterGoodPart(siteName: String): Boolean {
+  private fun filterGoodPart(siteName: String): Boolean {
     val stars = listOf<String>("IMiss")
-    val temp = stars.stream().filter { siteName.contains(it) }.toList()
-    return temp.isNotEmpty()
+    return stars.stream().anyMatch { siteName.contains(it) }
   }
 }
