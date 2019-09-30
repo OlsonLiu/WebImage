@@ -22,11 +22,7 @@ class NlegsDL {
         UrlWithTitle(it?.getAttribute("href").toString().trim(), it?.getAttribute("innerText").toString())
       }.toList()
 
-      for (data in dlObjs) {
-        if (filterGoodPart(data.title)) {
-          downloadWholePage(data.url)
-        }
-      }
+      dlObjs.stream().filter { filterGoodPart(it.title) }.forEach { downloadWholePage(it.url) }
     } catch (e: Exception) {
       e.printStackTrace()
       driver!!.close()
