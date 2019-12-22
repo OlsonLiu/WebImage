@@ -1,4 +1,3 @@
-
 import org.openqa.selenium.By
 import org.openqa.selenium.chrome.ChromeDriver
 import java.awt.image.BufferedImage
@@ -42,7 +41,8 @@ class NlegsDL {
 
     var elements = driver.findElements(By.cssSelector(".col-md-12.col-lg-12.panel.panel-default .panel-body a"))
     for ((index, webElement) in elements.withIndex()) {
-      if (File(file, "$index.jpg").exists()) continue;
+      var fileNameIndex = index + 1
+      if (File(file, "$fileNameIndex.jpg").exists()) continue;
 
       val urlStr = webElement.getAttribute("href").toString().trim()
       var url = URL(urlStr)
@@ -52,7 +52,7 @@ class NlegsDL {
       connection.addRequestProperty("Referer", urlStr)
       val savedImg: BufferedImage = ImageIO.read(connection.inputStream)
 
-      ImageIO.write(savedImg, "jpg", File(file, "${index + 1}.jpg"))
+      ImageIO.write(savedImg, "jpg", File(file, "${fileNameIndex}.jpg"))
     }
   }
 
